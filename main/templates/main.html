@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Shop</title>
+</head>
+<body>
+    <h1>Welcome to Endorphins Shop</h1>
+
+    <h4> Owner's Name : Aghnaya Kenarantanov</h4>
+    <h4>NPM: 2406436410</h4> 
+    <h4>Class: PBP A</h4>
+    
+    <ul>
+        {% for product in products %}
+        <li>
+            <img src="{{ product.thumbnail }}" alt="{{ product.name }}" width="100">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <p>Price: Rp.{{ product.price }}.000</p>
+            <p>Category: {{ product.category }}</p>
+            {% if product.is_featured %}
+            <strong>Featured Product</strong>
+            {% endif %}
+        </li>
+        {% empty %}
+        <p>No products available.</p>
+        {% endfor %}
+    </ul>
+</body>
+</html>
