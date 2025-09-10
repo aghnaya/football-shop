@@ -1,4 +1,6 @@
 # App's name : Endorphins Shop
+link : https://aghnaya-kenarantanov-footballshop.pbp.cs.ui.ac.id/
+
 ## Langkah Pengerjaan
 
 1. Membuat proyek Django dengan `django-admin startproject`.
@@ -32,6 +34,6 @@ File `settings.py` fungsinya sebagai pusat konfigurasi proyek Django:
 ## Django Cocok Untuk Pemula
 - Karena penggunaannya mudah dipahami
 
-## Feedback dari Tutorial 1
+## Feedback dari asdos di Tutorial 1
 Di tutorial 1, saya belum mengaktifkan Autosave. Saat ini saya sudah mengaktifkan autosave
 
