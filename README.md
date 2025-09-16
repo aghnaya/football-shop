@@ -1,39 +1,37 @@
-# App's name : Endorphins Shop
-link : https://aghnaya-kenarantanov-footballshop.pbp.cs.ui.ac.id/
+# Tugas 3 PBP 
 
-## Langkah Pengerjaan
+# 1. Mengapa kita memerlukan data delivery dalam platform? 
+Data delivery dibutuhkan agar platform dapat berjalan secara efisien dan tetap aman. Karena tanpa adanya data delivery platform tidak bisa berjalan dengan baik.
 
-1. Membuat proyek Django dengan django-admin startproject.
-2. Membuat app main dengan python manage.py startapp main.
-3. Melakukan routing agar app bisa dijalankan di root URL.
-4. Membuat model Product sesuai ketentuan dan melakukan migrasi.
-5. Membuat fungsi view untuk menampilkan info diri dan nama aplikasi.
-6. Melakukan routing dari app ke view tersebut.
-7. Menambahkan template HTML.
-8. Melakukan deployment ke PWS.
+# 2. Mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer? 
+Menurut saya, JSON lebih mudah dipahami. Kemungkinan JSON lebih populer adalah karena lebih praktis penggunaanya.
 
-## Bagan request client
-https://docs.google.com/document/d/1xgGbrqNQ5LQcDUVP2adBJyY-kk0Wy4mFjwyu7iXKkeQ/edit?usp=sharing
+# 3. Fungsi dari is_valid() pada form Django  
+Fungsi is_valid berfungsi untuk memvalidasi data input sesuai dengan aturan field. Hal ini agar tidak ada data invalid yang masuk
 
-### Penjelasan:
-- urls.py mengarahkan request ke views.py.
-- views.py memproses request, bisa membaca dari models.py.
-- Hasil dari views.py diberikan ke HTML template sebagai response.
+# 4. Mengapa perlu csrf_token di form Django?  
+csrf_token berfungsi untuk mencegah adanya CSRF atau serangan Cross-Site Request Forgery. CSRF adalah salah satu serangan yang dapat membuat pengguna web melakukan tindakan yang tidak diinginkan tanpa sepengetahuan mereka. 
 
-## Peran settings.py
-File settings.py fungsinya sebagai pusat konfigurasi proyek Django:
-- Untuk menentukan apps yang digunakan (INSTALLED_APPS)
-- Konfigurasi database, static files, templates, security
-- Setting untuk deployment (DEBUG, ALLOWED_HOSTS)
+# 5. Step-by-step implementasi checklist:  
+1. Menambahkan views untuk json dan xml.  
+2. Menambahkan routing pada urls.py. 
+3. Membuat tombol add dan detail.
+4. Membuat file baru forms.py untuk menambahkan objek.  
+5. Melakukan testing dengan browser dan Postman.  
+6. Commit & push ke GitHub.  
 
-## Cara Kerja Migrasi Database di Django
-1. Definisikan model di models.py.
-2. Jalankan makemigrations untuk membuat skrip migrasi.
-3. Jalankan migrate untuk menerapkan perubahan ke database.
+# 6. Feedback untuk asdos:  
+Menurut saya, tutorial 2 cukup mudah dipahami. Namun saya masih belum familiar dengan aplikasi Postman.
 
-## Django Cocok Untuk Pemula
-- Karena penggunaannya mudah dipahami
+## 7. Screenshots Postman
+- JSON 
+  https://docs.google.com/document/d/1k4wvmzEX9uwfPA6IIUr_0PzFv8a9mYXWIeBiDz1ro2E/edit?tab=t.0
 
-## Feedback dari asdos di Tutorial 1
-Di tutorial 1, saya belum mengaktifkan Autosave. Saat ini saya sudah mengaktifkan autosave
+- XML   
+  https://docs.google.com/document/d/1k4wvmzEX9uwfPA6IIUr_0PzFv8a9mYXWIeBiDz1ro2E/edit?tab=t.majroqxq6znb
 
+- JSON by ID
+  https://docs.google.com/document/d/1k4wvmzEX9uwfPA6IIUr_0PzFv8a9mYXWIeBiDz1ro2E/edit?tab=t.ifbh1gefsbqp
+
+- XML by ID  
+  https://docs.google.com/document/d/1k4wvmzEX9uwfPA6IIUr_0PzFv8a9mYXWIeBiDz1ro2E/edit?tab=t.wr99vip6fq3y
