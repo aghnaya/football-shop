@@ -12,17 +12,26 @@
     <h4>NPM: 2406436410</h4> 
     <h4>Class: PBP A</h4>
     
+    <!--tombol "Add"-->
+    <a href="{% url 'main:add_product' %}">
+        <button>Add Product</button>
+    </a>
     <ul>
         {% for product in products %}
         <li>
             <img src="{{ product.thumbnail }}" alt="{{ product.name }}" width="100">
             <h2>{{ product.name }}</h2>
-            <p>{{ product.description }}</p>
+            <p style="white-space: pre-line;">Description: {{ product.description }}</p>
             <p>Price: Rp.{{ product.price }}.000</p>
             <p>Category: {{ product.category }}</p>
             {% if product.is_featured %}
             <strong>Featured Product</strong>
             {% endif %}
+
+            <!--untuk tombol "Detail"-->
+            <a href="{% url 'main:product_detail' product.id %}">
+                <button>Detail</button>
+            </a>
         </li>
         {% empty %}
         <p>No products available.</p>
