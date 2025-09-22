@@ -13,6 +13,13 @@
         <strong>Featured Product</strong>
     {% endif %}
 
+    {% if request.user %}
+    <p style="color: rgb(95, 36, 255);"><strong>Seller: </strong> {{ request.user.username }}</p>
+    {% else %}
+        <p style="color: rgb(95, 36, 255);"><strong>Seller: </strong> Anonymous</p>
+    {% endif %}
+
+    
     <br>
     <a href="{% url 'main:show_main' %}">Back to Main</a>
 </body>
