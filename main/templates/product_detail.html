@@ -14,7 +14,7 @@
     {% endif %}
 
     {% if request.user %}
-    <p style="color: rgb(95, 36, 255);"><strong>Seller: </strong> {{ request.user.username }}</p>
+    <p style="color: rgb(95, 36, 255);"><strong>Seller: </strong> {{ product.user }}</p>
     {% else %}
         <p style="color: rgb(95, 36, 255);"><strong>Seller: </strong> Anonymous</p>
     {% endif %}
