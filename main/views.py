@@ -23,7 +23,7 @@ def show_main(request):
         'npm' : '2406436410',
         'name': request.user.username,
         'class': 'PBP A',
-        'products': products,
+        'products_list': products,
         'last_login': request.COOKIES.get('last_login', 'Never')
     }
     return render(request, "main.html", context)
@@ -99,3 +99,24 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
+@login_required(login_url='/login')
+def edit_product(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)  
+    form = AddForms(request.POST or None, instance=product)
+
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form,
+        'product': product
+    }
+    return render(request, "edit_product.html", context)
+
+
+@login_required(login_url='/login')
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id, user=request.user)  
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
