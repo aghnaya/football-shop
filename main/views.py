@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+import json
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -40,18 +41,19 @@ def show_json(request):
     products = Product.objects.all()
     data = [
         {
-            'id': str(product.id),
-            'name': product.name,
-            'price': product.price,
-            'thumbnail': product.thumbnail,
-            'description': product.description,
-            'category': product.category,
-            'is_featured': product.is_featured,
-            'user_id': product.user.id if product.user else None
+            "pk": product.id,
+            "fields": {
+                "name": product.name,
+                "price": product.price,
+                "thumbnail": product.thumbnail,
+                "description": product.description,
+                "category": product.category,
+                "is_featured": product.is_featured,
+                "user_id": product.user.id if product.user else None
+            }
         }
         for product in products
     ]
-
     return JsonResponse(data, safe=False)
 
 def show_xml_by_id(request, id):
@@ -98,55 +100,63 @@ def product_detail(request, id):
     }
     return render(request, "product_detail.html", context)
 
+@csrf_exempt
 def register(request):
-    form = UserCreationForm()
-
-    if request.method == "POST":
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your account has been successfully created!')
-            return redirect('main:login')
-    context = {'form':form}
-    return render(request, 'register.html', context)
+            return JsonResponse({'status': 'success', 'message': 'Your account has been successfully created!'})
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
+@csrf_exempt
 def login_user(request):
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            response = HttpResponseRedirect(reverse("main:show_main"))
+            response = JsonResponse({'status': 'success', 'message': 'Login successful!'})
             response.set_cookie('last_login', str(datetime.datetime.now()))
             return response
-   
-    else:
-        form = AuthenticationForm(request)
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
-    context = {'form': form}
-    return render(request, 'login.html', context)
-
+@login_required(login_url='/login')
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse('main:login'))
+    response = JsonResponse({'status': 'success', 'message': 'Logout successful!'})
     response.delete_cookie('last_login')
     return response
 
+@csrf_exempt
+@login_required(login_url='/login')
+@csrf_exempt
 @login_required(login_url='/login')
 def edit_product(request, id):
-    product = get_object_or_404(Product, pk=id, user=request.user)  
-    form = AddForms(request.POST or None, instance=product)
+    product = get_object_or_404(Product, pk=id, user=request.user)
 
-    if form.is_valid() and request.method == 'POST':
-        form.save()
-        return redirect('main:show_main')
+    if request.method == "POST":
+        form = AddForms(request.POST, instance=product)
+        if form.is_valid():
+            updated_product = form.save(commit=False)
+            updated_product.user = request.user
+            updated_product.save()
+            return JsonResponse({'status': 'success', 'message': 'Product updated!'})
+        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
 
-    context = {
-        'form': form,
-        'product': product
-    }
-    return render(request, "edit_product.html", context)
-
+    # kalau GET 
+    else:
+        data = {
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,              # ⬅️ tambahkan ini
+            'category': product.category,
+            'thumbnail': product.thumbnail,
+            'is_featured': product.is_featured,
+        }
+        return JsonResponse(data)
 
 @login_required(login_url='/login')
 def delete_product(request, id):
@@ -155,23 +165,28 @@ def delete_product(request, id):
     return HttpResponseRedirect(reverse('main:show_main'))
 
 @csrf_exempt
-@require_POST
-def add_product_entry_ajax(request):
-    name = strip_tags(request.POST.get("name"))
-    description = strip_tags(request.POST.get("description"))
-    category = request.POST.get("category")
-    thumbnail = request.POST.get("thumbnail")
-    is_featured = request.POST.get("is_featured") == 'on'  # checkbox handling
-    user = request.user
+@login_required(login_url='/login')
+def add_product_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description', '')
+        price = int(request.POST.get('price', 0))
+        category = request.POST.get('category', '')
+        thumbnail = request.POST.get('thumbnail', '')
+        is_featured = request.POST.get('is_featured') == 'on'
 
-    new_product = Product(
-        name=name, 
-        description=description,
-        category=category,
-        thumbnail=thumbnail,
-        is_featured=is_featured,
-        user=user
-    )
-    new_product.save()
+        new_product = Product.objects.create(
+            user=request.user,
+            name=name,
+            description=description,
+            price=price,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+        )
 
-    return HttpResponse(b"CREATED", status=201)
+        return JsonResponse({
+            'id': new_product.id,
+            'name': new_product.name,
+        }, status=201)
+    return JsonResponse({'error': 'Invalid method'}, status=405)
