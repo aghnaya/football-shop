@@ -100,28 +100,30 @@ def product_detail(request, id):
     }
     return render(request, "product_detail.html", context)
 
-@csrf_exempt
 def register(request):
+    form = UserCreationForm()
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return JsonResponse({'status': 'success', 'message': 'Your account has been successfully created!'})
-        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+            messages.success(request, 'Akun berhasil dibuat. Silakan login.')
+            return redirect('main:login')  
+    return render(request, 'register.html', {'form': form})
 
-@csrf_exempt
 def login_user(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            response = JsonResponse({'status': 'success', 'message': 'Login successful!'})
+            response = redirect('main:show_main')  
             response.set_cookie('last_login', str(datetime.datetime.now()))
             return response
-        return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+        return render(request, 'login.html', {'form': form})
+    else:
+        form = AuthenticationForm()
+        return render(request, 'login.html', {'form': form})
+
 
 @login_required(login_url='/login')
 def logout_user(request):
@@ -130,8 +132,6 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
-@csrf_exempt
-@login_required(login_url='/login')
 @csrf_exempt
 @login_required(login_url='/login')
 def edit_product(request, id):
@@ -158,10 +158,15 @@ def edit_product(request, id):
         }
         return JsonResponse(data)
 
+@csrf_exempt
+@require_POST
 @login_required(login_url='/login')
 def delete_product(request, id):
-    product = get_object_or_404(Product, pk=id, user=request.user)  
+    product = get_object_or_404(Product, pk=id, user=request.user)
     product.delete()
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
+        return JsonResponse({'status': 'success', 'message': 'Product deleted'})
     return HttpResponseRedirect(reverse('main:show_main'))
 
 @csrf_exempt
@@ -190,3 +195,17 @@ def add_product_ajax(request):
             'name': new_product.name,
         }, status=201)
     return JsonResponse({'error': 'Invalid method'}, status=405)
+
+def show_items_json(request):
+    items = Product.objects.filter(user=request.user)
+    return JsonResponse(
+        {
+            "items": list(
+                items.values(
+                    "id", "name", "price", "description",
+                    "thumbnail", "category", "is_featured"
+                )
+            )
+        },
+        safe=False
+    )

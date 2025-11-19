@@ -27,10 +27,11 @@ SECRET_KEY = 'django-insecure-=52j#kv2vqs7q6=uo@*v&any19oj14&+ypoxkjx9)gb5_v38l_
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() == 'true'
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "aghnaya-kenarantanov-footballshop.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = ["http://10.0.2.2:8000", "localhost", "127.0.0.1", "10.0.2.2", "aghnaya-kenarantanov-footballshop.pbp.cs.ui.ac.id"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://aghnaya-kenarantanov-footballshop.pbp.cs.ui.ac.id",
+     "http://10.0.2.2:8000"
 ]
 
 # Application definition
@@ -42,12 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    'authentication',           
+    'corsheaders',  
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -139,6 +143,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 if DEBUG:
     STATICFILES_DIRS = [
         BASE_DIR / 'static' # merujuk ke /static root project pada mode development
